@@ -1,0 +1,40 @@
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+
+# Local Android SDK configuration
+local.properties
+
+# Generated / local files
+.externalNativeBuild/
+.cxx/
+
+# Kotlin / Java generated files
+.kotlin/
+out/
+
+# APK / AAB outputs
+*.apk
+*.aab
+
+# Signing / credentials
+*.jks
+*.keystore
+*.p12
+*.pem
+*.key
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary / backup files
+# Keep project-specific .bak files visible for now.
