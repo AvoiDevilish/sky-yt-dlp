@@ -5,7 +5,8 @@ plugins {
 
 android {
     namespace = "com.skyytdlp.poc"
-    compileSdk = 34
+    compileSdk = 36
+    buildToolsVersion = "36.0.0"
 
     defaultConfig {
         applicationId = "com.skyytdlp.poc"
@@ -14,7 +15,7 @@ android {
         // AAR manifest. 24 is a conservative modern default; raise it if
         // Gradle's manifest merger complains.
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "0.1.0-poc"
 
@@ -92,5 +93,5 @@ dependencies {
 
     // FFmpeg module intentionally NOT included in this PoC.
     // See MISSION_001C_REPORT.md, "FFmpeg decision".
-    // implementation("io.github.junkfood02.youtubedl-android:ffmpeg:0.18.1")
+    implementation("io.github.junkfood02.youtubedl-android:ffmpeg:0.18.1")
 }

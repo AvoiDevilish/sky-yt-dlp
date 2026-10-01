@@ -33,9 +33,12 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             MaterialTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
+                Surface(
+                    modifier = Modifier.fillMaxSize()
+                ) {
                     SkyYtDlpPocScreen(viewModel)
                 }
             }
@@ -45,11 +48,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun SkyYtDlpPocScreen(viewModel: DownloadViewModel) {
-    // Vimeo test URL taken directly from youtubedl-android's own README
-    // usage example. Whether this specific 14-year-old video ID still
-    // resolves is UNKNOWN — NEEDS LOCAL VERIFICATION. If it's gone, replace
-    // with any other yt-dlp-supported non-YouTube/Instagram/TikTok/X URL.
-    var url by remember { mutableStateOf("https://vimeo.com/22439234") }
+
+    var url by remember {
+        mutableStateOf("")
+    }
+
     val state = viewModel.uiState
 
     Column(
@@ -59,14 +62,21 @@ fun SkyYtDlpPocScreen(viewModel: DownloadViewModel) {
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+
         Text(
-            text = "Sky yt-dlp — Android PoC",
+            text = "UOG Downloader",
             style = MaterialTheme.typography.headlineSmall
+        )
+
+        Text(
+            text = "Local video archive downloader",
+            style = MaterialTheme.typography.bodyMedium
         )
 
         if (!AppInit.isInitialized) {
             Text(
-                text = "youtubedl-android did not initialize: ${AppInit.initError ?: "unknown error"}",
+                text = "youtubedl-android did not initialize: " +
+                    (AppInit.initError ?: "unknown error"),
                 color = MaterialTheme.colorScheme.error
             )
         }
@@ -74,21 +84,35 @@ fun SkyYtDlpPocScreen(viewModel: DownloadViewModel) {
         OutlinedTextField(
             value = url,
             onValueChange = { url = it },
-            label = { Text("Media URL") },
+            label = {
+                Text("Media URL")
+            },
+            placeholder = {
+                Text("https://...")
+            },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = state !is DownloadUiState.Running
         )
 
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+
             Button(
-                onClick = { viewModel.startDownload(url) },
-                enabled = state !is DownloadUiState.Running
+                onClick = {
+                    viewModel.startDownload(url)
+                },
+                enabled = state !is DownloadUiState.Running &&
+                    url.isNotBlank()
             ) {
                 Text("Download")
             }
+
             OutlinedButton(
-                onClick = { viewModel.cancelDownload() },
+                onClick = {
+                    viewModel.cancelDownload()
+                },
                 enabled = state is DownloadUiState.Running
             ) {
                 Text("Cancel")
@@ -96,30 +120,75 @@ fun SkyYtDlpPocScreen(viewModel: DownloadViewModel) {
         }
 
         when (state) {
+
             is DownloadUiState.Idle -> {
                 Text("Status: idle")
             }
+
             is DownloadUiState.Running -> {
+
                 Text("Status: downloading")
+
                 LinearProgressIndicator(
-                    progress = (state.progress / 100f).coerceIn(0f, 1f),
+                    progress = {
+                        (state.progress / 100f)
+                            .coerceIn(0f, 1f)
+                    },
                     modifier = Modifier.fillMaxWidth()
                 )
-                Text("Progress: ${state.progress}%  ETA: ${state.etaSeconds}s")
+
+                Text(
+                    "Progress: ${state.progress}%  " +
+                        "ETA: ${state.etaSeconds}s"
+                )
+
                 if (state.lastLine.isNotBlank()) {
-                    Text("yt-dlp: ${state.lastLine}", style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        text = "yt-dlp: ${state.lastLine}",
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
             }
+
             is DownloadUiState.Completed -> {
-                Text("Status: completed")
-                Text("Saved to folder: ${state.outputDir}")
+
+                Text(
+                    text = "Status: completed",
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                Text("Saved file:")
+
+                Text(
+                    text = state.outputFile,
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
+
             is DownloadUiState.Failed -> {
-                Text("Status: failed", color = MaterialTheme.colorScheme.error)
-                Text(state.message, color = MaterialTheme.colorScheme.error)
+
+                Text(
+                    text = "Status: failed",
+                    color = MaterialTheme.colorScheme.error
+                )
+
+                Text(
+                    text = state.message,
+                    color = MaterialTheme.colorScheme.error
+                )
             }
+
             is DownloadUiState.Cancelled -> {
+
                 Text("Status: cancelled")
+
+                OutlinedButton(
+                    onClick = {
+                        viewModel.reset()
+                    }
+                ) {
+                    Text("Reset")
+                }
             }
         }
     }

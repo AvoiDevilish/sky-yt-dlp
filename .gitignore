@@ -38,3 +38,6 @@ Thumbs.db
 
 # Temporary / backup files
 # Keep project-specific .bak files visible for now.
+
+*.bak
+*.part
